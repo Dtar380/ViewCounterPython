@@ -66,10 +66,10 @@ def retrieve_url(query, user: str, repo: str = None) -> str:
 
     # If theres only user query, update the user file, else update both repo and user
     if not repo:
-        number = update_count(f"views/{user}/{user}.txt")
+        number = update_count(f"data/{user}/{user}.txt")
     else:
         update_count(f"views/{user}/{user}.txt")
-        number = update_count(f"views/{user}/r_{repo}.txt")
+        number = update_count(f"data/{user}/r_{repo}.txt")
 
     # Generate parameters for the badge
     params = {
