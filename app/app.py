@@ -1,9 +1,7 @@
 #####     IMPORTS     #####
-from os.path import exists, isfile
-from os import makedirs, umask
+from os.path import exists
 from flask import Flask, request
 from requests import get
-from bs4 import BeautifulSoup
 import json
 
 #####    CONSTANTS    #####
