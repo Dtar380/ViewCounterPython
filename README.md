@@ -25,7 +25,7 @@
 
 4. Add the link to a `![image](url)` markdown tag or a `<img src="url">` html tag
 5. The result should look like this:<br>
-<img alt="Visitors" title="Visitors" src="https://viewcounterpython.onrender.com/Dtar380/ViewCounterPython">
+<img alt="Visitors" title="Visitors" src="http://viewcounterpython.onrender.com/Dtar380/ViewCounterPython">
 
 ## :open_file_folder: Known Issues
 The API is up and working as intended
