@@ -7,7 +7,7 @@ import json
 
 #####    CONSTANTS    #####
 GITHUB = "https://github.com" # Github url as a constant
-FILE_PATH = "app/database.json"
+FILE_PATH = "database.json"
 
 #####    VARIABLES    #####
 app = Flask(__name__) # Flask app
