@@ -9,8 +9,8 @@ from database import FireBaseDB
 #####    CONSTANTS    #####
 GITHUB = "https://github.com" # Github url as a constant
 FILE_PATH = "database.json"
-FIREBASE_URL = "https://githubviewcounter-default-rtdb.europe-west1.firebasedatabase.app/"
-CREDENTIALS = "/etc/secrets/credentials.json"
+FIREBASE_URL = "https://githubviewcounter-da085-default-rtdb.europe-west1.firebasedatabase.app/"
+CREDENTIALS = "app/credentials.json"
 
 #####   CLASS CALLS   #####
 app = Flask(__name__)
@@ -66,31 +66,28 @@ def update_counter(user: str, repo: str = None) -> int:
             "repos": {}
         }
 
-        # Set the action to write record since it does not exist
+        # Set action to write since user its not registered
         action = db.writeRecord
-
+    
     else:
-        # Set the action to update record since it does exist
+        # Set action to update since user its register
         action = db.updateRecord
 
     # Update the user total view count
     data[user] += 1
 
-    # If a repo was provided
-    if repo:
-        # And was already listed add 1 and set that value to number var
-        if repo in data["repos"].keys():
-            data["repos"][repo] += 1
-            number = data["repos"][repo]
-        # If it didn't exist set both the repo and number value to 1
-        else:
-            data[user]["repos"][repo] = 1
-            number = 1
-
+    # If a repo was provided and does not exist
+    if repo and repo not in data["repos"].keys():
+        data["repos"][repo] = 1
+        number = 1
+    # If a repo was provided and does exist
+    elif repo:
+        data["repos"][repo] += 1
+        number = data["repos"][repo]
     # If no repo was provided
-    else:
+    elif not repo:
         # Set the number to the user view count
-        number = data[user][user]
+        number = data[user]
 
     # Write new values
     action(path=f"/users/{user}", data=data)

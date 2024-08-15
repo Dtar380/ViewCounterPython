@@ -7,7 +7,7 @@ class FireBaseDB:
     def __init__(self, credentials_path: str, database_url: str) -> None:
         cred = credentials.Certificate(credentials_path)
         firebase_admin.initialize_app(cred,{
-            "databaseUrl": database_url
+            "databaseURL": database_url
         })
 
     def writeRecord(self, path: str, data: dict) -> None:
@@ -20,4 +20,4 @@ class FireBaseDB:
 
     def readRecord(self, path: str) -> dict:
         ref = db.reference(path)
-        ref.get()
+        return ref.get()
