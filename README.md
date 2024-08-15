@@ -3,7 +3,7 @@
 ## **A Python/Flask based API to create custom ViewCounter Badges**
 **ViewsCounterPython** is a Python/Flask based API which appends to `img.shields.io` to generate a custom static badge with a viewcount which is updated every time the API is appended.<br>
 
-## :bookmarks_tabs: **Table of Content**
+## :bookmark_tabs: **Table of Content**
 - [**How to use**](#clipboard-how-to-use)
 - [**Known Issues**]()
 - [**License**]()
