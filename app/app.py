@@ -10,7 +10,7 @@ from database import FireBaseDB
 GITHUB = "https://github.com" # Github url as a constant
 FILE_PATH = "database.json"
 FIREBASE_URL = "https://githubviewcounter-da085-default-rtdb.europe-west1.firebasedatabase.app/"
-CREDENTIALS = "/etc/secrets/credentials.json"
+CREDENTIALS = "app/credentials.json"
 
 #####   CLASS CALLS   #####
 app = Flask(__name__)
@@ -148,7 +148,10 @@ def retrieve_url(query, user: str, repo: str = None) -> str:
 # for the view count of the repo given with the given query parameters
 @app.route("/<user>/<repo>")
 def give_views_url(user: str, repo: str):
-
+    # Check if the request is made via browser
+    if request.headers.get("Sec-Fetch-Site") == "none":
+        return {"status": 400, "message": "Requests are not allowed via browser"}
+    
     # Checks if the provided user and/or repo exists
     check_url_result = check_url(user, repo)
     if not check_url_result[0]:
@@ -172,7 +175,10 @@ def give_views_url(user: str, repo: str):
 # for the view count of the user given with the given query parameters
 @app.route("/<user>")
 def get_profile_views(user: str):
-
+    # Check if the request is made via browser
+    if request.headers.get("Sec-Fetch-Site") == "none":
+        return {"status": 400, "message": "Requests are not allowed via browser"}
+    
     # Checks if the provided user and/or repo exists
     check_url_result = check_url(user)
     if not check_url_result[0]:
@@ -194,7 +200,7 @@ def get_profile_views(user: str):
 
 # Index page
 # Retrieves a status 200 code and a message in JSON format if everything is OK
-@app.route("/")
+@app.route("/status")
 def index():
     return {"status": 200, "message": "running"}
 
