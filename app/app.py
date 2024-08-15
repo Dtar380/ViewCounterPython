@@ -10,7 +10,7 @@ from database import FireBaseDB
 GITHUB = "https://github.com" # Github url as a constant
 FILE_PATH = "database.json"
 FIREBASE_URL = "https://githubviewcounter-da085-default-rtdb.europe-west1.firebasedatabase.app/"
-CREDENTIALS = "app/credentials.json"
+CREDENTIALS = "/etc/secrets/credentials.json"
 
 #####   CLASS CALLS   #####
 app = Flask(__name__)
