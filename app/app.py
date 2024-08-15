@@ -4,13 +4,20 @@ from flask import Flask, Response, request
 import requests
 import datetime
 import json
+from database import FireBaseDB
 
 #####    CONSTANTS    #####
 GITHUB = "https://github.com" # Github url as a constant
 FILE_PATH = "database.json"
+FIREBASE_URL = "https://githubviewcounter-default-rtdb.europe-west1.firebasedatabase.app/"
+CREDENTIALS = "/etc/secrets/credentials.json"
 
-#####    VARIABLES    #####
-app = Flask(__name__) # Flask app
+#####   CLASS CALLS   #####
+app = Flask(__name__)
+db = FireBaseDB(
+    credentials_path=CREDENTIALS,
+    database_url=FIREBASE_URL
+)
 
 #####    FUNCTIONS    #####
 # Checks if user and/or repo exist
@@ -27,53 +34,58 @@ def check_url(user: str, repo: str = None) -> list:
 # Reads the count without updating it
 def read_count(user: str, repo: str = None) -> str:
 
-    # Read the file
-    with open(FILE_PATH, "r+") as f:
-        data = json.load(f)
+    # Read database
+    data = db.readRecord(f"/users/{user}")
 
     # Check if the user and/or repo is on the database
-    if user not in data.keys():
+    if not data:
         return {"status": 404, "message": "No user found on database"}
-    elif repo and repo not in data[user]["repos"].keys():
+    elif repo and repo not in data["repos"].keys():
         return {"status": 404, "message": "No repo found on database"}
-
+    
     # If no repo was provided return the user total views
     if not repo:
-        return {user: data[user][user]}
+        return {user: data[user]}
     # If repo was provided return repo total views
     else:
-        return {repo: data[user]["repos"][repo]}
+        return {user: data["repos"][repo]}
 
 # Updates the count on the given username + repo/user
-def update_count(user: str, repo: str = None) -> int:
+def update_counter(user: str, repo: str = None) -> int:
 
     # Open the file and read the value
-    with open(FILE_PATH, "r+") as f:
-        data = json.load(f)
+    data = db.readRecord(path=f"/users/{user}")
 
     # Check if user is already in the DataBase
-    if not user in data.keys():
+    if not data:
 
         # Create a key with the username and add 1 view to the username
         # And if a repo was provided add one view to the repo too
-        data[user] = {
+        data = {
             user: 0,
             "repos": {}
         }
 
+        # Set the action to write record since it does not exist
+        action = db.writeRecord
+
+    else:
+        # Set the action to update record since it does exist
+        action = db.updateRecord
+
     # Update the user total view count
-    data[user][user] = data[user][user] + 1
+    data[user] += 1
 
     # If a repo was provided
     if repo:
         # And was already listed add 1 and set that value to number var
-        if repo in data[user]["repos"].keys():
-            data[user]["repos"][repo] = data[user]["repos"][repo] + 1
-            number = data[user]["repos"][repo]
+        if repo in data["repos"].keys():
+            data["repos"][repo] += 1
+            number = data["repos"][repo]
         # If it didn't exist set both the repo and number value to 1
         else:
             data[user]["repos"][repo] = 1
-            number = data[user]["repos"][repo]
+            number = 1
 
     # If no repo was provided
     else:
@@ -81,8 +93,7 @@ def update_count(user: str, repo: str = None) -> int:
         number = data[user][user]
 
     # Write new values
-    with open(FILE_PATH, "w+") as f:
-        json.dump(data, f)
+    action(path=f"/users/{user}", data=data)
 
     return number
 
@@ -115,9 +126,9 @@ def retrieve_url(query, user: str, repo: str = None) -> str:
 
     # If theres only user query, update the user file, else update both repo and user
     if not repo:
-        number = update_count(user)
+        number = update_counter(user)
     else:
-        number = update_count(user, repo)
+        number = update_counter(user, repo)
 
     # Generate parameters for the badge
     params = {
